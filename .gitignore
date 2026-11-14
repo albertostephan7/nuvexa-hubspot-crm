@@ -1,0 +1,6 @@
+# Created by the import script; contains record IDs of one specific account
+data/import_state.json
+
+# Never commit credentials
+*.token
+.env

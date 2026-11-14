@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nuvexa Pipeline Insights</title>
+<style>
+  :root{
+    color-scheme: light;
+    --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --base:#c3c2b7; --ring:rgba(11,11,11,.10);
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+    --o1:#86b6ef; --o2:#5598e7; --o3:#2a78d6; --o4:#1c5cab; --o5:#184f95;
+    --on-fill:#ffffff; --on-yellow:#0b0b0b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --page:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --base:#383835; --ring:rgba(255,255,255,.10);
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c;
+      --o1:#86b6ef; --o2:#5598e7; --o3:#3987e5; --o4:#2a78d6; --o5:#1c5cab;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --base:#383835; --ring:rgba(255,255,255,.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c;
+    --o1:#86b6ef; --o2:#5598e7; --o3:#3987e5; --o4:#2a78d6; --o5:#1c5cab;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 16px 64px}
+  h1{font-size:1.6rem;margin:0 0 4px}
+  .sub{color:var(--ink2);margin:0 0 24px}
+  .tag{display:inline-block;font-size:.8rem;color:var(--ink2);border:1px solid var(--ring);border-radius:999px;padding:2px 10px;margin-bottom:12px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+  .tile,.card{background:var(--surface);border:1px solid var(--ring);border-radius:8px}
+  .tile{padding:14px 16px}
+  .tile .l{color:var(--ink2);font-size:.85rem}
+  .tile .v{font-size:1.9rem;font-weight:600;line-height:1.2}
+  .tile .d{color:var(--muted);font-size:.8rem}
+  .card{padding:18px 18px 14px;margin-bottom:20px}
+  .card h2{font-size:1.1rem;margin:0}
+  .card .take{color:var(--ink2);margin:2px 0 14px;font-size:.95rem}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  svg text{font-family:inherit;fill:var(--muted);font-size:12px}
+  svg text.val{fill:var(--ink);font-size:13px;font-weight:600}
+  svg text.cat{fill:var(--ink2);font-size:13px}
+  .mark{cursor:default;outline:none}
+  .mark:hover,.mark:focus{filter:brightness(1.12)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 0 0;padding:0;list-style:none;font-size:.85rem;color:var(--ink2)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  details{margin-top:10px;color:var(--ink2);font-size:.85rem}
+  summary{cursor:pointer}
+  table{border-collapse:collapse;margin-top:8px;width:100%}
+  th,td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--grid)}
+  th{color:var(--ink2);font-weight:600}
+  td.n,th.n{text-align:right}
+  #tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);border-radius:6px;padding:8px 10px;font-size:.85rem;box-shadow:0 4px 14px rgba(0,0,0,.15);display:none;z-index:5;max-width:260px}
+  #tip .v{font-weight:700}
+  #tip .s{color:var(--ink2)}
+  footer{color:var(--muted);font-size:.8rem;margin-top:8px}
+  @media (forced-colors:active){ .mark{stroke:CanvasText;stroke-width:1px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">Portfolio project &middot; fictional data</span>
+  <h1>Nuvexa pipeline insights</h1>
+  <p class="sub">What the CRM data says about wins, losses and revenue. Nuvexa is a made-up B2B SaaS for digital agencies; the data was generated and loaded into HubSpot (free plan) through its API, then read back for these charts.</p>
+
+  <div class="tiles" id="tiles"></div>
+
+  <section class="card" id="c1">
+    <h2>Open deals by stage</h2>
+    <p class="take" id="t1"></p>
+    <div id="ch1"></div>
+    <details><summary>Table view</summary><div id="tb1"></div></details>
+  </section>
+
+  <section class="card" id="c2">
+    <h2>Why deals are lost, by agency size</h2>
+    <p class="take" id="t2"></p>
+    <div id="ch2"></div>
+    <ul class="legend" id="lg2"></ul>
+    <details><summary>Table view</summary><div id="tb2"></div></details>
+  </section>
+
+  <section class="card" id="c3">
+    <h2>Won MRR by plan</h2>
+    <p class="take" id="t3"></p>
+    <div id="ch3"></div>
+    <details><summary>Table view</summary><div id="tb3"></div></details>
+  </section>
+
+  <footer>Source: HubSpot CRM API export of the Nuvexa account (80 deals, 150 companies). Stages show each deal's current stage (a snapshot), not historical conversion. With only 20 lost deals, treat reason splits as illustrative.</footer>
+</div>
+<div id="tip" role="status"></div>
+
+<script>
+const DATA = /*DATA*/[];
+
+const STAGES = [
+  ['appointmentscheduled','New lead','--o1'],
+  ['qualifiedtobuy','Discovery call','--o2'],
+  ['presentationscheduled','Demo','--o3'],
+  ['decisionmakerboughtin','Trial','--o4'],
+  ['contractsent','Proposal','--o5']
+];
+const SIZES = ['1-5','6-15','16-50','51+'];
+const REASONS = [['Price','--s1'],['Missing feature','--s2'],['Chose competitor','--s3'],['No budget','--s4'],['No response','--s5'],['Bad timing','--s6']];
+const PLANS = ['Starter','Growth','Scale'];
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const NS = 'http://www.w3.org/2000/svg';
+const css = v => 'var(' + v + ')';
+
+function el(name, attrs, text){
+  const e = document.createElementNS(NS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function html(tag, attrs, text){
+  const e = document.createElement(tag);
+  for (const k in (attrs||{})) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+// bar with square baseline end (left) and 4px rounded data end (right)
+function barPath(x, y, w, h, r){
+  r = Math.min(r, w, h/2);
+  return `M${x},${y} H${x+w-r} Q${x+w},${y} ${x+w},${y+r} V${y+h-r} Q${x+w},${y+h} ${x+w-r},${y+h} H${x} Z`;
+}
+
+// tooltip: values lead, labels follow. Uses textContent only.
+const tip = document.getElementById('tip');
+function showTip(lines, x, y){
+  tip.replaceChildren();
+  lines.forEach((l, i) => {
+    const d = html('div', {class: i === 0 ? 'v' : 's'}, l);
+    tip.appendChild(d);
+  });
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(Math.max(8, x + 14), window.innerWidth - w - 8) + 'px';
+  tip.style.top = Math.min(Math.max(8, y + 14), window.innerHeight - h - 8) + 'px';
+}
+function hideTip(){ tip.style.display = 'none'; }
+function bindMark(node, lines, label){
+  node.setAttribute('class', 'mark');
+  node.setAttribute('tabindex', '0');
+  node.setAttribute('role', 'img');
+  node.setAttribute('aria-label', label);
+  node.addEventListener('pointermove', e => showTip(lines, e.clientX, e.clientY));
+  node.addEventListener('pointerleave', hideTip);
+  node.addEventListener('focus', () => { const b = node.getBoundingClientRect(); showTip(lines, b.right - 20, b.top); });
+  node.addEventListener('blur', hideTip);
+}
+function table(host, head, rows){
+  const t = html('table');
+  const thead = html('thead'), trh = html('tr');
+  head.forEach((h, i) => trh.appendChild(html('th', i ? {class:'n'} : {}, h)));
+  thead.appendChild(trh); t.appendChild(thead);
+  const tb = html('tbody');
+  rows.forEach(r => { const tr = html('tr'); r.forEach((c, i) => tr.appendChild(html('td', i ? {class:'n'} : {}, String(c)))); tb.appendChild(tr); });
+  t.appendChild(tb); host.replaceChildren(t);
+}
+
+// ---------- numbers ----------
+const won  = DATA.filter(d => d.stage === 'closedwon');
+const lost = DATA.filter(d => d.stage === 'closedlost');
+const open = DATA.filter(d => !d.stage.startsWith('closed'));
+const sum = (a, k) => a.reduce((s, d) => s + d[k], 0);
+const winRate = won.length / (won.length + lost.length);
+
+// ---------- tiles ----------
+[
+  ['Win rate', Math.round(winRate * 100) + '%', won.length + ' won, ' + lost.length + ' lost'],
+  ['Won MRR', money(sum(won, 'mrr')), won.length + ' customers, ' + money(sum(won, 'mrr') * 12) + ' ARR'],
+  ['Open pipeline', money(sum(open, 'amount')), open.length + ' deals, annual value (ARR)']
+].forEach(([l, v, d]) => {
+  const t = html('div', {class:'tile'});
+  t.appendChild(html('div', {class:'l'}, l));
+  t.appendChild(html('div', {class:'v'}, v));
+  t.appendChild(html('div', {class:'d'}, d));
+  document.getElementById('tiles').appendChild(t);
+});
+
+// generic horizontal bar chart (one series)
+function hbars(host, rows, opts){
+  // rows: [{label, value, color, tipLines, aria}]
+  const W = 720, labelW = opts.labelW, padR = 90, rowH = 44, barH = 24, top = 6;
+  const H = top + rows.length * rowH;
+  const svg = el('svg', {viewBox:`0 0 ${W} ${H}`, role:'group', 'aria-label':opts.title});
+  const max = Math.max(...rows.map(r => r.value), 1);
+  const plotW = W - labelW - padR;
+  svg.appendChild(el('line', {x1:labelW, x2:labelW, y1:top, y2:H, stroke:css('--base'), 'stroke-width':1}));
+  rows.forEach((r, i) => {
+    const y = top + i * rowH + (rowH - barH) / 2;
+    const w = Math.max(4, (r.value / max) * plotW);
+    svg.appendChild(el('text', {x:labelW - 10, y:y + barH/2 + 4, 'text-anchor':'end', class:'cat'}, r.label));
+    const p = el('path', {d:barPath(labelW, y, w, barH, 4), fill:css(r.color)});
+    bindMark(p, r.tipLines, r.aria);
+    svg.appendChild(p);
+    svg.appendChild(el('text', {x:labelW + w + 8, y:y + barH/2 + 4, class:'val'}, opts.fmt(r.value)));
+  });
+  host.replaceChildren(svg);
+}
+
+// ---------- chart 1: open deals by stage ----------
+(function(){
+  const rows = STAGES.map(([id, name, c]) => {
+    const g = open.filter(d => d.stage === id);
+    return {label:name, value:g.length, color:c, arr:sum(g, 'amount'), mrr:sum(g, 'mrr')};
+  });
+  const biggest = rows.reduce((a, b) => b.arr > a.arr ? b : a);
+  document.getElementById('t1').textContent =
+    open.length + ' deals are open, worth ' + money(sum(open, 'amount')) + ' a year. ' +
+    biggest.label + ' holds the most value (' + money(biggest.arr) + ').';
+  hbars(document.getElementById('ch1'), rows.map(r => ({
+    label:r.label, value:r.value, color:r.color,
+    tipLines:[r.value + ' deals', r.label, money(r.arr) + ' ARR, ' + money(r.mrr) + ' MRR'],
+    aria:r.label + ': ' + r.value + ' deals, ' + money(r.arr) + ' ARR'
+  })), {labelW:130, title:'Open deals by stage', fmt:v => String(v)});
+  table(document.getElementById('tb1'), ['Stage','Deals','ARR','MRR'], rows.map(r => [r.label, r.value, money(r.arr), money(r.mrr)]));
+})();
+
+// ---------- chart 2: loss reasons by size (stacked) ----------
+(function(){
+  const W = 720, labelW = 110, padR = 60, rowH = 44, barH = 24, top = 6, gap = 2;
+  const H = top + SIZES.length * rowH;
+  const counts = SIZES.map(s => REASONS.map(([r]) => lost.filter(d => d.size === s && d.loss === r).length));
+  const totals = counts.map(c => c.reduce((a, b) => a + b, 0));
+  const max = Math.max(...totals, 1);
+  const plotW = W - labelW - padR;
+  const unit = plotW / max;
+  const svg = el('svg', {viewBox:`0 0 ${W} ${H}`, role:'group', 'aria-label':'Loss reasons by agency size'});
+  svg.appendChild(el('line', {x1:labelW, x2:labelW, y1:top, y2:H, stroke:css('--base'), 'stroke-width':1}));
+  SIZES.forEach((s, i) => {
+    const y = top + i * rowH + (rowH - barH) / 2;
+    svg.appendChild(el('text', {x:labelW - 10, y:y + barH/2 + 4, 'text-anchor':'end', class:'cat'}, s + ' people'));
+    let x = labelW;
+    const lastIdx = counts[i].map((c, k) => c ? k : -1).filter(k => k >= 0).pop();
+    counts[i].forEach((c, k) => {
+      if (!c) return;
+      const w = c * unit - (k === lastIdx ? 0 : gap);
+      const d = k === lastIdx ? barPath(x, y, w, barH, 4) : `M${x},${y} h${w} v${barH} h${-w} Z`;
+      const p = el('path', {d, fill:css(REASONS[k][1])});
+      const share = Math.round(c / totals[i] * 100);
+      bindMark(p, [c + (c === 1 ? ' deal' : ' deals') + ' (' + share + '%)', REASONS[k][0], s + ' people, ' + totals[i] + ' lost in total'],
+               s + ' people, ' + REASONS[k][0] + ': ' + c);
+      svg.appendChild(p);
+      x += c * unit;
+    });
+    svg.appendChild(el('text', {x:x + 8, y:y + barH/2 + 4, class:'val'}, totals[i] === 1 ? '1' : String(totals[i])));
+  });
+  document.getElementById('ch2').replaceChildren(svg);
+  const lg = document.getElementById('lg2');
+  REASONS.forEach(([r, c]) => {
+    const li = html('li');
+    const sw = html('i'); sw.style.background = css(c);
+    li.appendChild(sw); li.appendChild(document.createTextNode(r)); lg.appendChild(li);
+  });
+  const byReason = REASONS.map(([r], k) => [r, counts.reduce((a, c) => a + c[k], 0)]).sort((a, b) => b[1] - a[1]);
+  const top1 = byReason[0];
+  const bigOnly = SIZES.filter((s, i) => totals[i] > 0 && counts[i][1] === totals[i]);
+  document.getElementById('t2').textContent =
+    top1[0] + ' is the top reason (' + top1[1] + ' of ' + lost.length + ' lost deals).' +
+    (bigOnly.length ? ' It is the only reason lost in the ' + bigOnly.join(', ') + ' agencies.' : '') +
+    ' Small agencies also lose on budget.';
+  table(document.getElementById('tb2'), ['Agency size'].concat(REASONS.map(r => r[0])).concat(['Total']),
+    SIZES.map((s, i) => [s + ' people'].concat(counts[i]).concat([totals[i]])));
+})();
+
+// ---------- chart 3: won MRR by plan ----------
+(function(){
+  const rows = PLANS.map(p => {
+    const g = won.filter(d => d.plan === p);
+    return {plan:p, n:g.length, mrr:sum(g, 'mrr'), users:sum(g, 'users')};
+  });
+  const total = sum(won, 'mrr');
+  const top1 = rows.reduce((a, b) => b.mrr > a.mrr ? b : a);
+  document.getElementById('t3').textContent =
+    top1.plan + ' brings ' + Math.round(top1.mrr / total * 100) + '% of won MRR from ' + top1.n + ' of ' + won.length + ' customers.';
+  hbars(document.getElementById('ch3'), rows.map(r => ({
+    label:r.plan, value:r.mrr, color:'--s1',
+    tipLines:[money(r.mrr) + ' MRR', r.plan + ' plan', r.n + ' customers, ' + r.users + ' seats'],
+    aria:r.plan + ': ' + money(r.mrr) + ' MRR from ' + r.n + ' customers'
+  })), {labelW:130, title:'Won MRR by plan', fmt:money});
+  table(document.getElementById('tb3'), ['Plan','Customers','Seats','MRR'], rows.map(r => [r.plan, r.n, r.users, money(r.mrr)]));
+})();
+</script>
+</body>
+</html>
