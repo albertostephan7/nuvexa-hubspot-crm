@@ -10,7 +10,7 @@ Nuvexa sells work-management software (projects, team, deliverables) to small an
 
 HubSpot is the CRM Nuvexa's sales team would use for that. The product itself is a different tool, closer to Asana or Monday.com.
 
-The project builds that CRM on HubSpot's free plan: a data model, one sales pipeline, imported data, segments, a dashboard, and an analysis for the parts the free plan does not cover.
+I set that CRM up on HubSpot's free plan: a data model, one sales pipeline, imported data, segments and a dashboard, plus an analysis for what the free plan can't do.
 
 ## What I built
 
@@ -31,7 +31,7 @@ The free plan allows one pipeline, so I renamed the stages of the default one:
 The percentage is the estimated chance of closing from that stage. Loss reasons are Price, Missing feature, Chose competitor, No budget, No response and Bad timing.
 
 ### Data
-`scripts/generate_data.ps1` creates the companies, contacts and deals with a fixed random seed, so the result is reproducible. Agency size sets the number of users, the number of users sets the plan (Starter up to 8 seats, Growth up to 25, Scale above), and seats × price ($12, $20, $30) gives the MRR. ARR is MRR × 12. Only lost deals have a loss reason, and closed deals close before today.
+`scripts/generate_data.ps1` creates the companies, contacts and deals with a fixed random seed, so the result is reproducible. Agency size sets the number of users, the number of users decides the plan (Starter up to 8 seats, Growth up to 25, Scale above), and seats × price ($12, $20, $30) gives the MRR. ARR is MRR × 12. Only lost deals have a loss reason, and closed deals close before today.
 
 The 80 deals are split as 8 New lead, 7 Discovery call, 8 Demo, 7 Trial, 10 Proposal, 20 Closed Won and 20 Closed Lost.
 
@@ -64,9 +64,9 @@ Custom reports are locked on the free plan, so HubSpot cannot chart deals by los
 - HubSpot's "Closed Lost Reason" is free text, which cannot be grouped in a chart, so I created a "Loss reason" dropdown.
 - HubSpot's MRR and ARR properties are calculated and cannot be written, so I created an "MRR" property.
 - Private apps no longer exist on the account, so the import uses a service key.
-- The API first answered with a 401 error because I had saved the wrong text as the token. A missing permission would have returned a 403, so the problem had to be the credential itself.
+- The API first returned a 401 because I had saved the wrong text as the token. A missing permission would have been a 403, so I knew the credential itself was the problem.
 - One segment showed 40 contacts when I expected 17. HubSpot automatically moves any contact with an open deal to Opportunity, whatever the stage.
-- The option to build a report from scratch is locked on the free plan, which is why the last chart set lives outside HubSpot.
+- Building a report from scratch is locked on the free plan, which is why the last charts live outside HubSpot.
 
 ## Limitations
 
@@ -74,7 +74,7 @@ Custom reports are locked on the free plan, so HubSpot cannot chart deals by los
 - Contacts were created on the import date, so "contacts added over time" is a single spike.
 - The charts show each deal's current stage, not historical conversion.
 - There is no automation, because of the free plan.
-- All data is fictional and only 20 deals were lost, so the figures show how the analysis works, not a conclusion about a market.
+- All data is fictional and only 20 deals were lost, so the figures only show how the analysis works.
 
 ## Repository
 
