@@ -102,4 +102,4 @@ Requires Windows PowerShell 5.1. The import script saves created IDs in `data/im
 - Built on a free plan, so there is no automation or custom reporting.
 
 ---
-*Author: [your name] · [LinkedIn profile]*
+*Author: Alberto Stephan · [LinkedIn](https://www.linkedin.com/in/albertostephan)*
